@@ -24,8 +24,8 @@ router.get('/user', auth, async (req, res) => {
     try {
         console.log(req.query)
         const user = req.user.id
-        const month = req.query.month
-        const year = req.query.year
+        const month = parseInt(req.query.month)
+        const year = parseInt(req.query.year)
         let total = await Operation.getTotalForMonth(user, month, year);
         total = total.map(obj => obj.total)[0]; // todo
         const totalByCategories = await Operation.getTotalByCategoriesAndMonth(user, month, year);
@@ -43,6 +43,12 @@ router.get('/user', auth, async (req, res) => {
                         ...category._doc,
                         totalByCategory: totalByCategory.total,
                         percent: (totalByCategory.total / total).toFixed(2) * 100
+                    }
+                } else {
+                    return {
+                        ...category._doc,
+                        totalByCategory: 0,
+                        percent: 0
                     }
                 }
             })

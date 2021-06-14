@@ -47,7 +47,9 @@ router.get('/categories/total', auth, async (req, res) => {
 router.get('/total', auth, async (req, res) => {
     // View all bills of the user
     try {
-        const operations = await Operation.getTotalForMonth(req.user.id)
+        const month = parseInt(req.query.month)
+        const year = parseInt(req.query.year)
+        const operations = await Operation.getTotalForMonth(req.user.id, month, year)
         if (!operations) {
             return res.status(404).send({error: 'Cant found operations for this user this month'})
         }
