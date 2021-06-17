@@ -76,6 +76,10 @@ const findByMonthAndYear = async (month, year, user) => {
     return operations
 }
 
+OperationSchema.statics.findByMonthAndYear = async (user, month, year) => {
+    return await findByMonthAndYear(month, year, user);
+}
+
 OperationSchema.statics.findByCurrentMonth = async (user) => {
     const now = new Date()
     return await findByMonthAndYear(now.getMonth() + 1, now.getFullYear(), user);
@@ -118,6 +122,26 @@ OperationSchema.statics.getTotalByCategory = async (user, category) => {
         {$unset: ['_id']}
     ])
 }
+
+OperationSchema.statics.getTotalByCategories = async (user) => {
+    return Operation.aggregate([
+        {
+            $match: {
+                $and: [
+                    {user_id: user},
+                ]
+            }
+        },
+        {
+            $group: {
+                _id: '$category_id',
+                total: {$sum: "$amount"},
+            }
+        },
+        {$sort: {total : -1}}
+    ])
+}
+
 
 OperationSchema.statics.getTotalForMonth = async (user, month, year) => {
     return Operation.aggregate([

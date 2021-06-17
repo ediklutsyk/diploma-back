@@ -27,8 +27,13 @@ const BillSchema = mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['card', 'cash', 'storing'],
+        enum: ['regular', 'storing'],
         default: 'card'
+    },
+    currency: {
+        type: String,
+        enum: ['UAH', 'USD', 'EUR'],
+        default: 'UAH'
     },
     goals: [{
         name: {

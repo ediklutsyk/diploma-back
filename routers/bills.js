@@ -35,6 +35,32 @@ router.get('/user', auth, async (req, res) => {
     }
 })
 
+router.post('/action', auth, async (req, res) => {
+    console.log(req.body)
+    const bill = await Bill.findById(req.body.fromId)
+    if (!bill) {
+        return res.status(404).send({error: 'Cant found bill for this user'})
+    }
+    const amount = req.body.amount
+    const action = req.body.action
+    switch (action) {
+        case 'move':
+            const billTo = await Bill.findById(req.body.toId)
+            bill.balance = bill.balance - amount;
+            billTo.balance = billTo.balance + amount;
+            billTo.save()
+            break;
+        case 'add':
+            bill.balance = bill.balance + amount;
+            break;
+        case 'refresh':
+            bill.balance = amount;
+            break;
+    }
+    bill.save()
+    res.status(200).send(bill)
+})
+
 // todo transfer money from one bill to another
 // todo add money to the bill
 
